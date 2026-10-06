@@ -28,22 +28,27 @@ For a small local example, follow the [20-step CPU example](dev/docs/usage.md#sh
 
 To check the full stack before the full pretraining run, Lyra Small was trained on 500M tokens on a single TPU v6e. That run's recipe is now shared by the pretraining presets. It took roughly ~4.5 hours and kept a sustained 35,000 TPS, High MFU (+25%), and remained healthy for the duration of the run.
 
-![Lyra Small trained on 500M tokens: loss, gradient norm, and expert routing balance](dev/runs/lyra-small-500m/metrics.png)
+The [500M-token checkpoint](https://huggingface.co/Ibbyml/lyra-small-1.6B) is available on Hugging Face, with Orbax model weights and download instructions. It is an early base-model checkpoint for trying Lyra's generation and evaluation workflows.
 
-`val` loss fell from 12.62 to 3.06. Routing stayed balanced, and every expert was in use at the end.
+<div align="center">
+  <picture>
+      <img src="dev/runs/lyra-small-500m/metrics.png" width="80%" alt="Lyra Small trained on 500M tokens: loss, gradient norm, and expert routing balance">
+  </picture>
+</div>
 
-<details>
-<summary>Samples from the final checkpoint</summary>
+val loss fell from 12.62 to 3.06. Routing stayed balanced, and every expert was in use at the end.
+
+
+### Samples
 
 > **Prompt**: The surprising thing about the ocean is
-
+>
 > **Completion**: that it is not always the case that the ocean is the only place where the ocean can support life. There are also some places where the ocean can be a source of food, a source of water, a source for life. [...]
-
+>
 > **Prompt**: The history of astronomy begins with
-
+>
 > **Completion**: Galileo Galilei. His work was published in 1619, and he was the first to use the word "astronomy" to refer to the study of celestial bodies in their natural environment. […]
-
-</details>
+>...
 
 The [run notes](dev/runs/lyra-small-500m) have the full setup, metrics, and samples.
 
@@ -51,9 +56,13 @@ The [run notes](dev/runs/lyra-small-500m) have the full setup, metrics, and samp
 
 ### Model
 
-Lyra Small is a 1.6B-parameter mixture-of-experts transformer with about 1B parameters active per token.
+Lyra Small is a 1.62B-parameter mixture-of-experts transformer with about 1.0B parameters active per token.
 
-![Attention, layer schedule, and mixture of experts](dev/assets/model.svg)
+<div align="center">
+  <picture>
+      <img src="dev/assets/model.svg" width="100%" alt="Attention, layer schedule, and mixture of experts">
+  </picture>
+</div>
 
 Attention is a Gated GQA and alternates between global and local windows (GLGL). It also has support for tanh XSA, Learned Attention Sinks, and a quantized KV Cache.
 
@@ -68,7 +77,11 @@ Lyra can also load OpenAI's original `gpt-oss-20b` and `gpt-oss-120b` checkpoint
 
 ### Kernels
 
-![Kernel speedups and MFU for Small and Medium](dev/assets/kernel-benchmarks.svg)
+<div align="center">
+  <picture>
+      <img src="dev/assets/kernel-benchmarks.svg" width="100%" alt="Kernel speedups and MFU for Small and Medium">
+  </picture>
+</div>
 
 Lyra currently has optimized kernels for the following operations:
 
@@ -77,7 +90,7 @@ Lyra currently has optimized kernels for the following operations:
 - [Grouped expert matmuls](lyra/kernels/gemm.py) fuse SwiGLU into the up projection, and a [SparseCore combine](lyra/kernels/combine.py), adapted from MaxText, gathers the expert outputs.
 - Decode [attention](lyra/kernels/decode_attention.py) and [matmul](lyra/kernels/decode_gemm.py) kernels handle generation, with BF16 or FP8 caches and weights.
 
-Against XLA on one TPU v6e at Small's shapes (batch 4, context 4,096; cross-entropy uses 4,096 total tokens), from the [2026-09-27 benchmarks](dev/benchmarks/RESULTS.md#lyra-small-b4):
+Against XLA on one TPU v6e at Small's shapes (B=4, T=4096), from the [Benchmarks](dev/benchmarks/RESULTS.md#lyra-small-b4):
 
 | Operation | Pallas ms | XLA ms | Speedup | Temp. memory saved |
 | --- | ---: | ---: | ---: | ---: |
@@ -94,16 +107,11 @@ Memory savings compare compiler-allocated temporary buffers per call. Cross-entr
 
 Muon updates the weight matrices, and Adam handles everything else (embeddings, routers, norms, and gates). Weights are stored in FP32 and compute runs in BF16, and gradient accumulation reaches half-million-token batches on a single chip. Data streams from ArrayRecord shards through Grain. Orbax checkpoints, saved locally or on GCS, include the optimizer and data-loader state along with the weights, so an interrupted run resumes where it stopped.
 
-### Making changes
-
-Every setting lives in one of two dataclasses. `ModelConfig` in [model.py](lyra/model.py) covers the architecture, precision, sharding, and kernels. `TrainingConfig` in [train.py](lyra/training/train.py) covers the schedule, optimizer, data, and checkpoints. The models in [variants.py](lyra/variants.py) and the runs in [presets.py](lyra/training/presets.py) are instances of these, so an experiment is usually a new entry in one of those two files. Common training settings are also available as flags:
-
-```bash
-uv run scripts/train.py --variant lyra-small --steps 1000 \
-  --data data/my-training-set --eval-data data/my-validation-set --out chkpt/experiment
-```
-
 The [usage guide](dev/docs/usage.md) covers data preparation, resuming, sampling, evaluation, and loading GPT-OSS weights.
+
+### Dataset
+
+[Lyra ClimbMix 30B](https://huggingface.co/datasets/Ibbyml/lyra-climbmix-30b) contains 30B tokens of shuffled ClimbMix, pretokenized with `o200k_harmony` and stored in 100 ArrayRecord shards. The download script fetches 21B training tokens by default, plus a separate 300M-token validation shard, ready for Lyra's data loader.
 
 ## Acknowledgements
 
