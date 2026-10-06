@@ -723,9 +723,6 @@ wheels = [
 ]
 
 [package.optional-dependencies]
-gcs = [
-    { name = "gcsfs" },
-]
 http = [
     { name = "aiohttp" },
 ]
@@ -2894,11 +2891,11 @@ wheels = [
 
 [[package]]
 name = "setuptools"
-version = "69.5.1"
+version = "83.0.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d6/4f/b10f707e14ef7de524fe1f8988a294fb262a29c9b5b12275c7e188864aed/setuptools-69.5.1.tar.gz", hash = "sha256:6c1fccdac05a97e598fb0ae3bbed5904ccb317337a51139dcd51453611bbb987", size = 2291314, upload-time = "2024-04-13T21:06:28.589Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/26/f5d29e25ffdb535afef2d35cdb55b325298f96debd670da4c325e08d70f4/setuptools-83.0.0.tar.gz", hash = "sha256:025bccbbf0fa05b6192bc64ae1e7b16e001fd6d6d4d5de03c97b1c1ade523bef", size = 1154254, upload-time = "2026-07-04T15:31:22.699Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f7/29/13965af254e3373bceae8fb9a0e6ea0d0e571171b80d6646932131d6439b/setuptools-69.5.1-py3-none-any.whl", hash = "sha256:c636ac361bc47580504644275c9ad802c50415c7522212252c033bd15f301f32", size = 894566, upload-time = "2024-04-13T21:06:23.256Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl", hash = "sha256:29b23c360f22f414dc7336bb39178cc7bcbf6021ed2733cde173f09dba19abb3", size = 1008090, upload-time = "2026-07-04T15:31:20.885Z" },
 ]
 
 [[package]]
@@ -2957,13 +2954,13 @@ wheels = [
 
 [[package]]
 name = "tensorboard-plugin-profile"
-version = "2.23.2"
+version = "2.23.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "xprof" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/be/5081f6044a8f8d5289d8af226bd9d72df9fa4de9245c9decf1721ea0efdc/tensorboard_plugin_profile-2.23.2-py3-none-any.whl", hash = "sha256:73eb5aa56b35be0cb91e8fa52f45b51ec14d60086b4b0356e89828048991b8b7", size = 7293, upload-time = "2026-09-16T06:25:59.199Z" },
+    { url = "https://files.pythonhosted.org/packages/bd/14/e916b42cb57a029e1598547a1b139c35b08db63bc0a71671defb6c1186dc/tensorboard_plugin_profile-2.23.1-py3-none-any.whl", hash = "sha256:5b40fac24fda65f40335e358f73d67a6ab26563e285946a0ef8da44cfe3eaf68", size = 7111, upload-time = "2026-08-06T06:09:34.064Z" },
 ]
 
 [[package]]
@@ -3247,14 +3244,15 @@ wheels = [
 
 [[package]]
 name = "xprof"
-version = "2.23.2"
+version = "2.23.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "absl-py" },
     { name = "cheroot" },
     { name = "etils", extra = ["epath"] },
     { name = "fire" },
-    { name = "fsspec", extra = ["gcs"] },
+    { name = "fsspec" },
+    { name = "gcsfs" },
     { name = "google-cloud-storage" },
     { name = "gviz-api" },
     { name = "protobuf" },
@@ -3264,10 +3262,10 @@ dependencies = [
     { name = "werkzeug" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/14/626697b190294ad00645e4b681d1be38660a32f87c1d00c2ba9cec9756cd/xprof-2.23.2-py3-none-macosx_11_0_arm64.whl", hash = "sha256:921bc9b1d28ea78d7c63614e28b88dadbe535cf5b6c07c7b65a829a329635a9e", size = 34643048, upload-time = "2026-09-15T16:55:08.637Z" },
-    { url = "https://files.pythonhosted.org/packages/1b/66/2adc3dd49bdeaa2e0741c82f422aa15b837117d0fcd88863812fd67913cc/xprof-2.23.2-py3-none-manylinux_2_27_x86_64.whl", hash = "sha256:cdd3387cc357f08713df10b1032977d01c478690e7601f833de13a8ef763aa7b", size = 18682012, upload-time = "2026-09-16T06:25:56.439Z" },
-    { url = "https://files.pythonhosted.org/packages/11/f0/a4d0fd16ce4c1bf5b55b5320ba580b4e6b6aa919152dc76c45d4ec4d49d3/xprof-2.23.2-py3-none-manylinux_2_35_aarch64.whl", hash = "sha256:38e809a29b8226183143d7adf59321f96f6b09ce5a0db0810162a2d9742187fa", size = 33686744, upload-time = "2026-09-15T16:50:38.973Z" },
-    { url = "https://files.pythonhosted.org/packages/96/2c/60215b0f7cf2404ae58fd4a17d1bab7a1a88df19a33357489630acdac3d6/xprof-2.23.2-py3-none-win_amd64.whl", hash = "sha256:d2b802594cf853c509e502a63403c481e607630a98d9ace4cb5fb275c707b5f5", size = 17845326, upload-time = "2026-09-15T17:25:34.211Z" },
+    { url = "https://files.pythonhosted.org/packages/67/2d/a0e140d4f682dd8d40bbaed82a79733dac6ad3a17e879f74d559a01b98b4/xprof-2.23.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:ad7727676b1808eb4b92fd87b121b4661ea25d30e9542339ab867843354e2253", size = 39724838, upload-time = "2026-08-06T06:21:12.169Z" },
+    { url = "https://files.pythonhosted.org/packages/ff/b9/51f3c808df9bc1e80e9f4e9f1c43dd18e49de8810c014542ec92d3725efd/xprof-2.23.1-py3-none-manylinux_2_27_x86_64.whl", hash = "sha256:96701f868b7a736a789d0a4b5efeeb269feaed63348117707e853a72e006c722", size = 24713873, upload-time = "2026-08-06T06:09:31.639Z" },
+    { url = "https://files.pythonhosted.org/packages/94/f9/505ec3ad2e43de156c9ea29247cdc2cd0ce7397c14ee5664ab00c3c8437e/xprof-2.23.1-py3-none-manylinux_2_35_aarch64.whl", hash = "sha256:5a0daf97fc328e2bee9ddd89b6cd7d3cd1966938428a4df6a496926f05a35836", size = 38820257, upload-time = "2026-08-05T14:28:29.711Z" },
+    { url = "https://files.pythonhosted.org/packages/12/bc/f093c5dadef9adb473ade323c7d2104f91a56f874d2cd048e3a1edde5a63/xprof-2.23.1-py3-none-win_amd64.whl", hash = "sha256:e56b7e7940f903f3ef27aa113b8b491c859f161fc55815541a58e54ecd0ca4d8", size = 23994768, upload-time = "2026-08-06T07:44:27.952Z" },
 ]
 
 [[package]]
