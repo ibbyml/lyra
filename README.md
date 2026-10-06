@@ -32,7 +32,7 @@ The [500M-token checkpoint](https://huggingface.co/Ibbyml/lyra-small-1.6B) is av
 
 <div align="center">
   <picture>
-      <img src="dev/runs/lyra-small-500m/metrics.png" width="80%" alt="Lyra Small trained on 500M tokens: loss, gradient norm, and expert routing balance">
+      <img src="dev/runs/lyra-small-500m/metrics.png" width="50%" alt="Lyra Small trained on 500M tokens: loss, gradient norm, and expert routing balance">
   </picture>
 </div>
 
@@ -58,11 +58,7 @@ The [run notes](dev/runs/lyra-small-500m) have the full setup, metrics, and samp
 
 Lyra Small is a 1.62B-parameter mixture-of-experts transformer with about 1.0B parameters active per token.
 
-<div align="center">
-  <picture>
-      <img src="dev/assets/model.svg" width="100%" alt="Attention, layer schedule, and mixture of experts">
-  </picture>
-</div>
+![Lyra Small trained on 500M tokens: loss, gradient norm, and expert routing balance](dev/runs/lyra-small-500m/metrics.png)
 
 Attention is a Gated GQA and alternates between global and local windows (GLGL). It also has support for tanh XSA, Learned Attention Sinks, and a quantized KV Cache.
 
@@ -79,7 +75,7 @@ Lyra can also load OpenAI's original `gpt-oss-20b` and `gpt-oss-120b` checkpoint
 
 <div align="center">
   <picture>
-      <img src="dev/assets/kernel-benchmarks.svg" width="100%" alt="Kernel speedups and MFU for Small and Medium">
+      <img src="dev/assets/kernel-benchmarks.svg" width="50%" alt="Kernel speedups and MFU for Small and Medium">
   </picture>
 </div>
 
