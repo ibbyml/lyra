@@ -1,0 +1,110 @@
+[build-system]
+requires = ["uv_build>=0.8.0,<1"]
+build-backend = "uv_build"
+
+[project]
+name = "lyra"
+version = "0.1.0"
+description = "A performant LLM pretraining stack in pure JAX."
+authors = [{ name = "Ibrahim Khan" }]
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.14"
+dependencies = [
+    "jax==0.11.2",
+    "numpy>=2.5.3",
+    "absl-py>=2.5.0",
+    "etils[epath]>=1.14.0",
+    "wadler-lindig>=0.1.7",
+    "tyro>=1.0.13",
+    "grain>=0.2.16",
+    "jaxtyping>=0.3.9",
+    "tiktoken>=0.12.0",
+    "safetensors>=0.7.0",
+    "array-record>=0.8.3",
+    "orbax-checkpoint>=0.12.0",
+    "datasets>=5.0.1",
+    "huggingface-hub>=1.33.0",
+    "matplotlib>=3.11.1",
+    "openai-harmony>=0.0.8",
+]
+
+[dependency-groups]
+dev = [
+    "hf-transfer>=0.1.9",
+    "ipykernel>=7.2.0",
+    "poethepoet>=0.46.0",
+    "pytest>=9.0.3",
+    "ruff>=0.15.15",
+    "tensorboard-plugin-profile>=2.23.1",
+    "treescope>=0.1.10",
+    "ty>=0.0.65",
+]
+
+[project.optional-dependencies]
+cpu = []
+tpu = ["jax[tpu]", "etils[epath-gcs]"]
+gpu = ["jax[cuda13]"]
+
+[project.urls]
+Repository = "https://github.com/ibbyml/lyra"
+Dataset = "https://huggingface.co/datasets/Ibbyml/lyra-climbmix-30b"
+
+[tool.uv]
+conflicts = [
+    [{ extra = "cpu" }, { extra = "tpu" }],
+    [{ extra = "cpu" }, { extra = "gpu" }],
+    [{ extra = "tpu" }, { extra = "gpu" }],
+]
+find-links = ["https://storage.googleapis.com/jax-releases/libtpu_releases.html"]
+constraint-dependencies = ["aiohttp>=3.14.3"]
+
+[tool.uv.build-backend]
+module-root = ""
+module-name = "lyra"
+source-include = ["data/*.py", "scripts/*.py", "tests/*.py", "dev/**/*.md", "dev/assets/*.svg"]
+source-exclude = [
+    "/dev/logs/**",
+    "/data/**/.DS_Store",
+    "/data/**/.cache/**",
+    "/data/**/*.array_record",
+    "/data/**/*.array_record.lengths.npy",
+    "/data/**/metadata.json",
+    "/data/train/**",
+    "/data/val/**",
+    "/data/training/**",
+    "/data/sft/**",
+    "/data/training-smoke/**",
+    "/lyra/**/.DS_Store",
+]
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py314"
+extend-exclude = ["dev"]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+ignore = ["E731", "F722"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.14"
+typeCheckingMode = "standard"
+reportRedeclaration = "none"
+reportUnsupportedDunderAll = "none"
+reportArgumentType = "none"
+
+[tool.poe.tasks]
+fmt = "ruff format ."
+fmt-check = "ruff format --check ."
+lint = "ruff check ."
+test = "pytest"
+tc = "ty check ."
