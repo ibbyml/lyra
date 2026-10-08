@@ -30,7 +30,7 @@ Training uses a hybrid Muon + Adam optimizer. Weights are stored in FP32 and com
 
 ### Results
 
-To check the full stack before the full pretraining run, Lyra Small was trained on 500M tokens on a single TPU v6e. That run's recipe is now shared by the pretraining presets. It took roughly ~4.5 hours and kept a sustained ~34,000 TPS, High MFU (+24%), and remained healthy for the duration of the run.
+To check the full stack before the full pretraining run, Lyra Small was trained on 500M tokens on a single TPU v6e. That run's recipe is now shared by the pretraining presets. It ran for 4h 40m end to end, sustained ~34,000 tokens/s (24% MFU), and stayed healthy for the whole run.
 
 ![Lyra Small trained on 500M tokens: loss, gradient norm, and expert routing balance](dev/runs/lyra-small-500m/metrics.png)
 

@@ -1,16 +1,19 @@
 # Benchmark results
 
-[Training step](#training-step) · [Step profile](#step-profile) · [Numerical checks](#numerical-checks) · [Isolated kernels](#isolated-kernels)
+[Training step](#training-step) · [Step profile](#step-profile) · [Isolated kernels](#isolated-kernels)
 
 ## Training step
 
 Lyra Small with 4 sequences per microbatch, 32 microbatches per step, and a 4096-token context: 524288 tokens per step, with FP32 weights and BF16 compute.
+
+The `train-small` preset accumulates 4 microbatches instead (65,536 tokens per step) and ran at 34,150 tokens/s (24.1% MFU) in the [500M-token run](../runs/lyra-small-500m). The larger step here spreads each update's fixed cost over 8× more tokens. MFU follows the [kernel guide](../docs/kernels.md#how-mfu-is-computed).
 
 | Measurement | Result |
 |---|---:|
 | Mean step time | 13.782 s |
 | Median step time | 13.764 s |
 | Throughput | 38,041 tokens/s |
+| Model FLOPs utilization | 26.8% |
 | Compiled peak memory | 28.814 GiB |
 | Compiler temporaries | 26,238,912,736 bytes |
 | Generated code | 164,669,440 bytes |
@@ -37,6 +40,10 @@ Lyra Small with 4 sequences per microbatch, 32 microbatches per step, and a 4096
 | MoE down dLHS | 128 | 0.827 | 105.874 |
 | MoE down dW | 128 | 0.915 | 117.102 |
 | SparseCore combine forward | 128 | 0.803 | 102.835 |
+
+## Isolated kernels
+
+Each kernel against its plain JAX reference compiled by XLA, on one TPU v6e at each model's shapes. Temp columns are compiler temporaries, and cross-entropy rows process T tokens per call. The Medium shapes predate its move to 31 + 1 experts.
 
 ### lyra-small-b4
 
