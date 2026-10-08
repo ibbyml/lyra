@@ -32,7 +32,6 @@ class QArray:
 
 
 def tile(x: Array, block: tuple[int, ...]) -> Array:
-    """[..., d0, d1] -> [..., d0//b0, b0, d1//b1, b1]. Pure reshape."""
     n = len(block)
     lead, tail = x.shape[: x.ndim - n], x.shape[x.ndim - n :]
     bad = [(d, b) for d, b in zip(tail, block) if d % b]

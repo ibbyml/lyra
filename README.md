@@ -1,6 +1,6 @@
 # Lyra
 
-Lyra is an LLM pretraining stack in pure JAX, built and optimized for TPUs. It covers everything from loading tokenized data to sampling from and evaluating a trained MoE model in a compact and lean codebase.
+Lyra is an end-to-end LLM pretraining stack in pure JAX, built and optimized for TPUs. It covers everything from loading tokenized data to sampling from and evaluating a trained MoE model in a compact and efficient codebase.
 
 ## Quick Start
 
@@ -20,20 +20,21 @@ uv run scripts/serve.py
 uv run scripts/evals.py --weights chkpt/lyra-small --tasks mmlu arc-challenge hellaswag
 ```
 
-The default run is 308,000 updates (~20.19B tokens), saving to `chkpt/lyra-small` every 1,000 updates and at completion. Use `--steps` for a shorter run and `--variant` to choose a model.
+The default run trains `lyra-small` on ~20B tokens, saving to `chkpt/lyra-small` every 1,000 updates and at completion.
 
-For a small local example, follow the [20-step CPU example](dev/docs/usage.md#short-cpu-run).
+For a small local example, follow the [20-step CPU example](dev/docs/usage.md#short-cpu-run). The [usage guide](dev/docs/usage.md) covers data, resuming, generation, evaluation, and GPT-OSS weights.
 
-## Results
+## Training
 
-To check the full stack before the full pretraining run, Lyra Small was trained on 500M tokens on a single TPU v6e. That run's recipe is now shared by the pretraining presets. It took roughly ~4.5 hours and kept a sustained 35,000 TPS, High MFU (+25%), and remained healthy for the duration of the run.
+Training uses a hybrid Muon + Adam optimizer. Weights are stored in FP32 and compute runs in BF16. Data streams from ArrayRecord shards through Grain. Orbax checkpoints, saved locally or on GCS, include the optimizer and data-loader state along with the weights, so an interrupted run resumes where it stopped.
 
-The [500M-token checkpoint](https://huggingface.co/Ibbyml/lyra-small-1.6B) is available on Hugging Face, with Orbax model weights and download instructions. It is an early base-model checkpoint for trying Lyra's generation and evaluation workflows.
+### Results
+
+To check the full stack before the full pretraining run, Lyra Small was trained on 500M tokens on a single TPU v6e. That run's recipe is now shared by the pretraining presets. It took roughly ~4.5 hours and kept a sustained ~34,000 TPS, High MFU (+24%), and remained healthy for the duration of the run.
 
 ![Lyra Small trained on 500M tokens: loss, gradient norm, and expert routing balance](dev/runs/lyra-small-500m/metrics.png)
 
-val loss fell from 12.62 to 3.06. Routing stayed balanced, and every expert was in use at the end.
-
+The [500M-token checkpoint](https://huggingface.co/Ibbyml/lyra-small-1.6B) is available on Hugging Face, with Orbax model weights and download instructions.
 
 ### Samples
 
@@ -48,28 +49,30 @@ val loss fell from 12.62 to 3.06. Routing stayed balanced, and every expert was 
 
 The [run notes](dev/runs/lyra-small-500m) have the full setup, metrics, and samples.
 
-## Details
+## Stack
 
 ### Model
 
-Lyra Small is a 1.62B-parameter mixture-of-experts transformer with about 1.0B parameters active per token.
+Lyra Small is a 1.62B-parameter MoE transformer based on the GPT-OSS architecture.
 
 <div align="center">
   <picture>
-      <img src="dev/assets/model.svg" width="75%" alt="Lyra Small trained on 500M tokens: loss, gradient norm, and expert routing balance">
+      <img src="dev/assets/model.svg" width="75%" alt="Lyra Model Architecture">
   </picture>
 </div>
 
-Attention is a Gated GQA and alternates between global and local windows (GLGL). It also has support for tanh XSA, Learned Attention Sinks, and a quantized KV Cache.
+Attention is a Gated GQA and alternates between local and global windows (LGLG). It also has support for tanh XSA (on from Medium up), Learned Attention Sinks, and a quantized KV Cache.
 
-| Model | Parameters | Width | Context | Layers | Experts |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| `lyra-small` | 1.6B | 2048  | 4096 | 16 | 15 + 1 shared |
-| `lyra-medium` | 11.3B | 4096 | 4096 | 32 | 15 + 1 shared |
-| `lyra-large` | 51.5B | 4096 | 4096 | 32 | 31 + 1 shared |
-| `lyra-max` | 99.9B | 4096 | 4096 | 32 | 63 + 1 shared |
+| Model | Context | Width | Layers | Experts | Parameters | Active |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `lyra-small` | 4096 | 2048 | 16 | 15 + 1 shared | 1.6B | 1.0B |
+| `lyra-medium` | 4096 | 4096 | 32 | 31 + 1 shared | 17.7B | 6.4B |
+| `lyra-large` | 4096 | 4096 | 32 | 31 + 1 shared | 51.5B | 9.2B |
+| `lyra-max` | 4096 | 4096 | 32 | 63 + 1 shared | 99.9B | 9.2B |
 
-Lyra can also load OpenAI's original `gpt-oss-20b` and `gpt-oss-120b` checkpoints for generation and evaluation. The [design guide](dev/docs/design.md) covers the architecture, optimizer, and sharding in more depth.
+Lyra can also load OpenAI's original `gpt-oss-20b` and `gpt-oss-120b` checkpoints for generation and evaluation. 
+
+The [design guide](dev/docs/design.md) covers the architecture, optimizer, and sharding in more depth.
 
 ### Kernels
 
@@ -88,22 +91,16 @@ Lyra currently has optimized kernels for the following operations:
 
 Against XLA on one TPU v6e at Small's shapes (B=4, T=4096), from the [Benchmarks](dev/benchmarks/RESULTS.md#lyra-small-b4):
 
-| Operation | Pallas ms | XLA ms | Speedup | Temp. memory saved |
+| Operation | Pallas ms | XLA ms | Speedup | Temp. mem saved |
 | --- | ---: | ---: | ---: | ---: |
-| Global attention, Forward | 2.269 | 6.112 | 2.69× | 99.95% |
-| SW-attention, Forward | 1.501 | 5.970 | 3.98× | 99.95% |
-| MoE up projection + SwiGLU | 1.513 | 7.258 | 4.80× | 100% |
-| MoE down projection | 0.861 | 3.240 | 3.76× | 100% |
-| Linear Cross-Entropy, Forward | 5.068 | 7.330 | 1.45× | >99.99% |
-| Expert combine, forward | 1.058 | 3.021 | 2.86× | 99.96% |
+| Global attention, Forward | **2.269** | 6.112 | 2.69× | 99.95% |
+| SW-attention, Forward | **1.501** | 5.970 | 3.98× | 99.95% |
+| MoE up projection + SwiGLU | **1.513** | 7.258 | 4.80× | 100% |
+| MoE down projection | **0.861** | 3.240 | 3.76× | 100% |
+| Linear Cross-Entropy, Forward | **5.068** | 7.330 | 1.45× | 99.99% |
+| Expert combine, forward | **1.058** | 3.021 | 2.86× | 99.96% |
 
-Memory savings compare compiler-allocated temporary buffers per call. Cross-entropy uses BF16 in Pallas and FP32 in the XLA reference. The [kernel guide](dev/docs/kernels.md) includes the full measurements and methodology.
-
-### Training
-
-Muon updates the weight matrices, and Adam handles everything else (embeddings, routers, norms, and gates). Weights are stored in FP32 and compute runs in BF16, and gradient accumulation reaches half-million-token batches on a single chip. Data streams from ArrayRecord shards through Grain. Orbax checkpoints, saved locally or on GCS, include the optimizer and data-loader state along with the weights, so an interrupted run resumes where it stopped.
-
-The [usage guide](dev/docs/usage.md) covers data preparation, resuming, sampling, evaluation, and loading GPT-OSS weights.
+The [kernel guide](dev/docs/kernels.md) covers each kernel, and the [benchmarks](dev/benchmarks/RESULTS.md) have the full measurements.
 
 ### Dataset
 

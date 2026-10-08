@@ -401,7 +401,6 @@ def decode_attention(
     tiling = None if config is None else f"kv{config.tile_kv} buf{config.kv_buffer_count}"
     op_shape = f"b{B} n{N} k{K} s{S} h{H} sw{sliding_window}"
 
-    # The XLA reference was faster at every decode shape measured on v6e, so "auto" selects it.
     out = dispatch_kernel(
         "decode_attention",
         implementation=implementation,

@@ -1,10 +1,10 @@
 from lyra.training.train import CHECKPOINT_DIR, DATA_DIR, TrainingConfig
 
 
-def _pretraining(variant: str, *, steps: int, accumulation_steps: int) -> TrainingConfig:
+def _pretraining(variant: str, *, steps: int, accumulation_steps: int, batch_size: int = 4) -> TrainingConfig:
     return TrainingConfig(
         steps=steps,
-        batch_size=4,
+        batch_size=batch_size,
         accumulation_steps=accumulation_steps,
         decay_type="cosine",
         warmup_fraction=16 / 7630,
@@ -28,7 +28,7 @@ TRAINING_PRESETS = {
         checkpoint_path=CHECKPOINT_DIR / "dev",
     ),
     "train-small": _pretraining("lyra-small", steps=308000, accumulation_steps=4),
-    "train-medium": _pretraining("lyra-medium", steps=490000, accumulation_steps=16),
-    "train-large": _pretraining("lyra-large", steps=353000, accumulation_steps=32),
-    "train-max": _pretraining("lyra-max", steps=353000, accumulation_steps=32),
+    "train-medium": _pretraining("lyra-medium", steps=490000, accumulation_steps=8, batch_size=8),
+    "train-large": _pretraining("lyra-large", steps=353000, accumulation_steps=8, batch_size=16),
+    "train-max": _pretraining("lyra-max", steps=353000, accumulation_steps=4, batch_size=32),
 }

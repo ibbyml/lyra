@@ -19,8 +19,6 @@ from lyra.nn.quant import QArray
 
 
 class Tag(Enum):
-    """Which optimizer a parameter belongs to: Muon for MATRIX, Adam for the rest."""
-
     DEFAULT = auto()
     SCALAR = auto()
     BIAS = auto()
@@ -76,9 +74,6 @@ def weight_sharding(spec) -> PyTree:
     return jax.tree.map(lambda leaf: leaf.sharding, spec, is_leaf=is_spec)
 
 
-# Masking: optimizer state for Muon and Adam covers disjoint subsets of the weights, with MaskedNode in the gaps.
-
-
 class MaskedNode:
     pass
 
@@ -100,9 +95,6 @@ def zero_masked_tree(tree, dtype: jnp.dtype | None = None) -> PyTree:
 
 def merge_masked_tree(tree1, tree2) -> PyTree:
     return jax.tree.map(lambda x, y: y if is_masked(x) else x, tree1, tree2, is_leaf=is_masked)
-
-
-# Weights
 
 
 @cache
@@ -134,7 +126,6 @@ def full_moe(layers: int) -> tuple[MLPKind, ...]:
 
 
 def interleaved_moe(layers: int, *, every: int, first: int) -> tuple[MLPKind, ...]:
-    """An MoE layer at `first` and every `every` layers after it, counting from one."""
     return tuple("moe" if layer >= first and (layer - first) % every == 0 else "dense" for layer in range(1, layers + 1))
 
 
@@ -146,7 +137,6 @@ def moe_outer_dense(layers: int, start_dense: int = 0, end_dense: int = 0) -> tu
 
 
 def spec_axis_names(spec) -> tuple[str, ...]:
-    """Mesh axes a PartitionSpec shards over."""
     axes: list[str] = []
     for partition in spec:
         if isinstance(partition, tuple):
@@ -211,7 +201,6 @@ class ShardingRules:
     def _size(self, axes: tuple[str, ...]) -> int:
         return math.prod(self.mesh_shape[self.mesh_axis_names.index(axis)] for axis in axes)
 
-    # Each role is read off the first dimension of a representative spec.
     data_axis_names = property(lambda self: spec_axis_names(self.batch_spec[:1]))
     model_axis_names = property(lambda self: spec_axis_names(self.attn_out_spec[:1]))
     fsdp_axis_names = property(lambda self: spec_axis_names(self.emb_spec[:1]))

@@ -36,8 +36,10 @@ lyra_medium = ModelConfig(
     n_kv_heads=8,
     head_dim=128,
     use_learned_xsa=True,
+    use_sdpa_output_gate=True,
     mlp_map=interleaved_moe(32, first=4, every=4),
-    sharding=data_parallel(),
+    n_routed_experts=31,
+    sharding=expert_parallel(fsdp=1, expert=8),
 )
 
 lyra_large = replace(
@@ -46,10 +48,17 @@ lyra_large = replace(
     mlp_map=moe_outer_dense(32, start_dense=2),
     n_routed_experts=31,
     dense_mlp_widening=4.0,
-    sharding=expert_parallel(fsdp=1, expert=8),
+    sharding=expert_parallel(fsdp=1, expert=16),
 )
 
-lyra_max = replace(lyra_large, name="Lyra Max", n_routed_experts=63)
+lyra_max = replace(
+    lyra_medium,
+    name="Lyra Max",
+    mlp_map=moe_outer_dense(32, start_dense=2),
+    n_routed_experts=63,
+    dense_mlp_widening=4.0,
+    sharding=expert_parallel(fsdp=1, expert=32),
+)
 
 gpt_oss_20b = ModelConfig(
     name="GPT-OSS 20B",
@@ -72,7 +81,13 @@ gpt_oss_20b = ModelConfig(
     use_router_bias=True,
 )
 
-gpt_oss_120b = replace(gpt_oss_20b, name="GPT-OSS 120B", n_layers=36, mlp_map=full_moe(layers=36), n_routed_experts=128)
+gpt_oss_120b = replace(
+    gpt_oss_20b,
+    name="GPT-OSS 120B",
+    n_layers=36,
+    mlp_map=full_moe(layers=36),
+    n_routed_experts=128,
+)
 
 MODEL_VARIANTS: dict[str, ModelConfig] = {
     "dev": lyra_dev,

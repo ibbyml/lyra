@@ -84,7 +84,6 @@ def select_linear_cross_entropy_config(
     config = LinearCrossEntropyConfig()
     if target == "v6e" and (tuned := _LINEAR_CE_CONFIGS.get((tokens, vocab, hidden))):
         config = tuned
-    # Every tile must divide the padded vocabulary and the token count; otherwise use the XLA reference.
     vocab_tiles = (config.tile_v, config.tile_v_dw, config.tile_v_dx)
     token_tiles = (config.tile_t, config.tile_t_dw, config.tile_t_dx)
     if any(vocab % tile for tile in vocab_tiles) or any(tokens % tile for tile in token_tiles):
@@ -99,7 +98,6 @@ def reduce_loss(loss: Array, reduction: Reduction, preferred_element_type: jnp.d
         return jnp.mean(loss, dtype=preferred_element_type)
     if reduction == "sum":
         return jnp.sum(loss, dtype=preferred_element_type)
-    raise ValueError(f"unsupported reduction: {reduction}")
 
 
 def grad_scale(tokens: int | Array, reduction: Reduction) -> Array | float:
@@ -107,7 +105,6 @@ def grad_scale(tokens: int | Array, reduction: Reduction) -> Array | float:
         return 1.0 / tokens
     if reduction == "sum":
         return 1.0
-    raise ValueError(f"unsupported reduction: {reduction}")
 
 
 def target_mask(y_tile, idx, bw):
@@ -484,7 +481,6 @@ def _linear_cross_entropy_bwd_dw_accum(
             pl.BlockSpec((1, 1), grad_index_map),
             pl.BlockSpec((TILE_V, C), dw_index_map, pl.Buffered(1)),
         ],
-        # The accepted V2048 path needs one buffer to fit v6e scoped VMEM.
         out_specs=pl.BlockSpec((TILE_V, C), dw_index_map, pl.Buffered(1)),
         out_shape=jax.ShapeDtypeStruct((V, C), dw_acc.dtype),
         scratch_shapes=(pltpu.VMEM((TILE_V, C), dtype=jnp.float32),),

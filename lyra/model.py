@@ -19,7 +19,7 @@ from lyra.kernels.common import Implementation, swiglu
 from lyra.kernels.embs import embs_gather
 from lyra.kernels.ep_moe import ep_moe_gemm, ep_shared_mlp
 from lyra.kernels.op import Mode, attn_op, gmm_op
-from lyra.nn.params import ArraySpec, MLPKind, ShardingRules, Tag, acast, arr, init_spec, init_weights, load_weights, psum_axes, qarr, wcast
+from lyra.nn.params import ArraySpec, MLPKind, ShardingRules, Tag, acast, arr, init_weights, load_weights, psum_axes, qarr, wcast
 from lyra.nn.quant import QArray, dot, einsum, quantize, qupdate
 from lyra.tokenizer import PADDED_VOCAB_SIZE
 from lyra.training.probe import NO_PROBE, Probe
@@ -172,11 +172,11 @@ def precompute_freq_cis(config: ModelConfig) -> tuple[np.ndarray, np.ndarray]:
         high = dim_half * math.log(config.seq_len / (config.ntk_alpha * 2.0 * math.pi)) * log_base
         ramp = 1.0 - np.clip((np.arange(int(dim_half), dtype=np.float64) - low) / (high - low), 0.0, 1.0)
         inv_freq = (1.0 - ramp) * (inv_freq / config.rope_scale) + ramp * inv_freq
-    
+
     angles = np.einsum("i,j->ij", positions, inv_freq)
     cos = (np.cos(angles) * concentration).astype(np.float32)
     sin = (np.sin(angles) * concentration).astype(np.float32)
-    
+
     return cos, sin
 
 
@@ -476,7 +476,7 @@ def route_tokens(t: Array, w: MoEWeights, config: ModelConfig, *, probe: Probe =
         scores = jnp.concatenate((scores, jnp.ones((tokens, shared), dtype=scores.dtype)), axis=-1)
     active_map = jnp.ravel(indices)
     groups = jnp.bincount(active_map, minlength=config.n_experts, length=config.n_experts)
-    
+
     return scores, active_map, groups, aux_loss
 
 
@@ -484,10 +484,10 @@ def bpermute(expert_ids: Array, group_sizes: Array, n_experts: int) -> tuple[Arr
     membership = jax.nn.one_hot(expert_ids, n_experts, dtype=jnp.int32)
     local_rank = jnp.take_along_axis(jnp.cumulative_sum(membership, axis=0) - 1, expert_ids[:, None], axis=1)
     destinations = (jnp.cumulative_sum(group_sizes) - group_sizes)[expert_ids] + local_rank[:, 0]
-    
+
     assignments = jnp.arange(expert_ids.shape[0], dtype=destinations.dtype)
     permutation = jnp.empty_like(assignments).at[destinations].set(assignments, unique_indices=True)
-    
+
     return permutation, destinations
 
 
@@ -543,11 +543,11 @@ def moe_apply(x: Array, w: MoEWeights, config: ModelConfig, *, probe: Probe = NO
                 quant_dtype=config.gemm_dtype,
             )
         probe.tensor("up_out", t)
-        
+
         with jax.named_scope("expert_down"):
             bias = down_bias / config.sharding.model_axis_size if exists(down_bias) else None
             t = psum_axes(gmm(lhs=t, rhs=mlp_down, group_sizes=groups, bias=bias, quant_dtype=config.gemm_dtype), config)
-    
+
     probe.tensor("down_out", t)
 
     with jax.named_scope("unpermute_combination"):
@@ -555,11 +555,11 @@ def moe_apply(x: Array, w: MoEWeights, config: ModelConfig, *, probe: Probe = NO
             t = combine(t, scores, permute_map, unpermute_map)
         else:
             t = einsum("fkc,fk->fc", t[unpermute_map].reshape(tokens, topk, C), scores)
-        
+
         if shared_out is not None:
-            t += shared_out # type: ignore
-    
-    t = t.reshape(B, T, C).astype(x.dtype) # type: ignore
+            t += shared_out  # type: ignore
+
+    t = t.reshape(B, T, C).astype(x.dtype)  # type: ignore
     probe.tensor("combined", t)
 
     t *= config.residual_scale
@@ -601,7 +601,7 @@ class DenseMLPWeights:
             up = quantize(up, config.gemm_dtype, (math.gcd(up.shape[-3], k), 1, math.gcd(up.shape[-1], n)))
         if not isinstance(down, QArray):
             down = _quantize_block(down, config)
-        
+
         return replace(w, mlp_up=up, mlp_down=down)
 
 
@@ -609,21 +609,21 @@ class DenseMLPWeights:
 def dense_mlp_apply(x: Array, w: DenseMLPWeights, config: ModelConfig, *, probe: Probe = NO_PROBE) -> Array:
     t = rms_norm(x, arr(w.norm_scale), config.norm_eps)
     probe.tensor("norm_out", t)
-    
+
     with jax.named_scope("up_projection"):
         t = dot(t, wcast(w.mlp_up, config.compute_dtype), dimension_numbers=NN_INNER)
         if exists(w.mlp_up_bias):
             t += acast(w.mlp_up_bias, config.compute_dtype)
     t = t.reshape(*t.shape[:-2], -1)
-    
+
     if probe.detailed:
         probe.tensor("up_out", t)
         probe.swiglu("swiglu", t, limit=config.swiglu_limit)
-        
+
     with jax.named_scope("swiglu"):
         t = swiglu(t, beta=config.swiglu_beta, limit=config.swiglu_limit)
     probe.tensor("act_out", t)
-    
+
     with jax.named_scope("down_projection"):
         t = psum_axes(dot(t, wcast(w.mlp_down, config.compute_dtype), dimension_numbers=NN_INNER), config)
         if exists(w.mlp_down_bias):
@@ -632,7 +632,7 @@ def dense_mlp_apply(x: Array, w: DenseMLPWeights, config: ModelConfig, *, probe:
 
     t *= config.dense_residual_scale
     probe.residual("residual", x, t)
-    
+
     return (x + t).astype(x.dtype)
 
 
@@ -660,7 +660,8 @@ def mlp_apply(x: Array, w: MLPWeights, config: ModelConfig, *, probe: Probe = NO
     return out, aux_loss
 
 
-# Model 
+# Model
+
 
 @register_dataclass
 @dataclass
@@ -715,7 +716,7 @@ class ModelWeights:
         w = init_weights(key, cls.spec(replace(config, use_sdpa_output_gate=False)))
         gate_spec = AttentionWeights.spec(config).sdpa_gate
         assert isinstance(gate_spec, ArraySpec)
-        gate = lambda idx: init_spec(jax.random.fold_in(key, idx), gate_spec)
+        gate = lambda idx: init_weights(jax.random.fold_in(key, idx), gate_spec)
         w.layers = [replace(layer, attn=replace(layer.attn, sdpa_gate=gate(idx))) for idx, layer in enumerate(w.layers)]
         return w
 
@@ -741,7 +742,7 @@ def model_apply(
     probe: Probe = NO_PROBE,
 ) -> tuple[Array, Array, ModelCache | None]:
     T = tokens.shape[1]
-    
+
     with jax.named_scope("token_embedding"):
         emb = arr(model.tok.emb)
         h = embs_gather(emb, tokens, emb.shape[0]) if config.use_presorted_emb_gather else jnp.take(emb, tokens, axis=0)
@@ -763,14 +764,14 @@ def model_apply(
             h, layer_aux = mlp_apply(h, layer.mlp, config, probe=layer_probe.scope("mlp"))
         aux_loss += layer_aux
         caches.append(layer_cache)
-    
+
     if config.n_moe_layers:
         aux_loss /= config.n_moe_layers
     updated_cache = None if cache is None else ModelCache(layers=tuple(cast(list[LayerCache], caches)), pos=start_pos + T)
 
     head = probe.scope("head")
     head.tensor("pre_norm", h)
-    
+
     with jax.named_scope("output_norm"):
         h = rms_norm(h, arr(model.tok.norm_scale), config.norm_eps)
     head.tensor("norm_out", h)
@@ -779,7 +780,7 @@ def model_apply(
     if return_hidden_states:
         head.logit_subsample("logits_subsample", h, unemb, vocab_size=config.vocab_size)
         return h, aux_loss, updated_cache
-    
+
     logits = dot(
         lhs=h,
         rhs=acast(unemb, config.compute_dtype),

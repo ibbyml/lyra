@@ -68,9 +68,6 @@ class GroupedGEMMConfig:
     rhs_buffer_count: int = 2
     rhs_buffer_count_dlhs: int = 2
     use_dlhs_kernel: bool = False
-    #: Zero dLHS rows past sum(group_sizes). Only the EP dropless path allocates
-    #: M larger than the live rows (worst-case receive backing); dense callers have
-    #: M == sum(group_sizes) and leave this off to avoid a full [M, K] masking pass.
     zero_slack_rows: bool = False
 
 

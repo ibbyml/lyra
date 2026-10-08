@@ -107,7 +107,7 @@ def clip_per_matrix_rms(grads: PyTree, max_rms: float, eps: float = 1e-8) -> tup
     rms_tree = mmap_with_path(rms, grads)
     all_rms = jnp.concatenate([jnp.ravel(r) for r in jax.tree.leaves(rms_tree)])
     metrics = {"muon_grad_rms_max": jnp.max(all_rms), "muon_grad_clip_frac": jnp.mean(all_rms > max_rms)}
-    
+
     return mmap_with_path(clip, grads, rms_tree), metrics
 
 
@@ -165,17 +165,17 @@ def adam_step(params, grads, state: AdamState, tcfg: TrainingConfig, lr: Array, 
 
 def optimizer_step(params, grads, state: OptimizerState, step: Array, tcfg: TrainingConfig):
     adam_lr, muon_lr, lr_scale = wsd_lr(step, tcfg)
-    
+
     with jax.named_scope("grad_clipping"):
         muon_grads = mmap(lambda g, _: g, grads, state.muon.moment)
         adam_grads = mmap(lambda g, _: g, grads, state.adam.mu)
         clipped, clip_metrics = clip_per_matrix_rms(muon_grads, tcfg.muon_grad_clip)
         grad_norm = global_l2_norm(grads)
         finite = jnp.isfinite(grad_norm)
-        
+
     with jax.named_scope("muon"):
         muon_params, muon_state = muon_step(params, clipped, state.muon, tcfg, muon_lr, finite)
-        
+
     with jax.named_scope("adam"):
         adam_params, adam_state = adam_step(params, grads, state.adam, tcfg, adam_lr, finite)
 

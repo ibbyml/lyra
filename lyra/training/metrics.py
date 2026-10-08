@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 
 import jax
 import numpy as np
@@ -59,6 +61,16 @@ class MetricsLogger:
         self._write(record)
         self.window = []
         self.window_start = time.perf_counter()
+
+    @contextmanager
+    def paused(self) -> Iterator[None]:
+        """Leave evaluation, sampling, and checkpointing out of the step time and throughput."""
+        jax.block_until_ready(self.window)
+        start = time.perf_counter()
+        try:
+            yield
+        finally:
+            self.window_start += time.perf_counter() - start
 
     def log_eval(self, step: int, metrics: dict) -> None:
         record = {"kind": "eval", "step": step} | {key: float(value) for key, value in metrics.items()}
