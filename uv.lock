@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.14"
 resolution-markers = [
     "sys_platform == 'win32'",
@@ -174,7 +174,7 @@ version = "4.15.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "idna" },
-    { name = "typing-extensions", marker = "python_full_version < '3.15' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "typing-extensions", marker = "python_full_version < '3.15'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a9/d2/f4d173e22df740bc37b1db102b386ba719b66e95b0f0d751f556b387e6d2/anyio-4.15.1.tar.gz", hash = "sha256:9f28306018cbd6d329e64a36d58256edff76dd996fe423bc957326e578b82a94", size = 276966, upload-time = "2026-09-05T10:42:39.44Z" }
 wheels = [
@@ -236,7 +236,7 @@ name = "cffi"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "implementation_name != 'PyPy' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz", hash = "sha256:dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be", size = 530807, upload-time = "2026-08-03T21:21:18.939Z" }
 wheels = [
@@ -495,7 +495,7 @@ name = "cryptography"
 version = "50.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_python_implementation != 'PyPy' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/bb/ad/5d6702db60b1e40b41ef513b6967ff5848f307d50f8449baf1634f5908f1/cryptography-50.0.1.tar.gz", hash = "sha256:5dd9bda1c12b4162f6ff568eeb5e0ff956c28d14406e875cfe8a63a2d414ff20", size = 880381, upload-time = "2026-08-25T19:45:45.499Z" }
 wheels = [
@@ -654,11 +654,11 @@ wheels = [
 
 [[package]]
 name = "filelock"
-version = "4.0.5"
+version = "4.2.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/95/31/fbad823d8dfc56e2ff694db0319959382bdb01f2fe40c382e34c6f672392/filelock-4.0.5.tar.gz", hash = "sha256:2b155f098c4f285fb41954a22c616c4e8a0635b78c184338ba3023c1c91a4b4d", size = 247758, upload-time = "2026-09-28T05:07:19.736Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d5/98/771d8ca889f220d7d7e352addf500666368f0fd081c6080a83767580c6e4/filelock-4.2.1.tar.gz", hash = "sha256:c4c937ccac2a813cee448e662a56366cfb374c0f8702e75f295c412cc1c5d5a3", size = 650997, upload-time = "2026-10-17T16:48:14.435Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/62/34/d90d7e7ef972900e09f45b9c0661376dd03e77fece26ee83ec93b7719bae/filelock-4.0.5-py3-none-any.whl", hash = "sha256:be9166068623636cedcad7b2ef735b04e5fb4344d978e09fd6fbd6ede06f14f0", size = 108976, upload-time = "2026-09-28T05:07:18.341Z" },
+    { url = "https://files.pythonhosted.org/packages/28/00/db89d339bc4ecdc8087fa7b8607ba22ffc27bf96286f340c9620bea428b3/filelock-4.2.1-py3-none-any.whl", hash = "sha256:7be2662e9e826b9bba28afc0f843a123280d799a2ea44bb5d35ccec67905ae44", size = 162455, upload-time = "2026-10-17T16:48:12.937Z" },
 ]
 
 [[package]]
@@ -937,7 +937,7 @@ version = "0.2.18"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "absl-py" },
-    { name = "array-record", marker = "sys_platform != 'win32' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "array-record", marker = "sys_platform != 'win32'" },
     { name = "cloudpickle" },
     { name = "etils", extra = ["epath", "epy"] },
     { name = "numpy" },
@@ -1112,7 +1112,7 @@ dependencies = [
     { name = "click" },
     { name = "filelock" },
     { name = "fsspec" },
-    { name = "hf-xet", marker = "platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "hf-xet", marker = "platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'" },
     { name = "httpx" },
     { name = "packaging" },
     { name = "pyyaml" },
@@ -1156,7 +1156,7 @@ name = "ipykernel"
 version = "7.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "appnope", marker = "sys_platform == 'darwin' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "appnope", marker = "sys_platform == 'darwin'" },
     { name = "comm" },
     { name = "debugpy" },
     { name = "ipython" },
@@ -1180,13 +1180,13 @@ name = "ipython"
 version = "9.17.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "ipython-pygments-lexers" },
     { name = "jedi" },
     { name = "matplotlib-inline" },
-    { name = "pexpect", marker = "(sys_platform != 'emscripten' and sys_platform != 'win32') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'win32' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (sys_platform == 'win32' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'win32' and extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "pexpect", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
     { name = "prompt-toolkit" },
-    { name = "psutil", marker = "(sys_platform != 'cygwin' and sys_platform != 'emscripten') or (sys_platform == 'cygwin' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (sys_platform == 'cygwin' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'cygwin' and extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "psutil", marker = "sys_platform != 'cygwin' and sys_platform != 'emscripten'" },
     { name = "pygments" },
     { name = "stack-data" },
     { name = "traitlets" },
@@ -1238,7 +1238,7 @@ wheels = [
 
 [package.optional-dependencies]
 cuda13 = [
-    { name = "jax-cuda13-plugin", extra = ["with-cuda"], marker = "extra == 'extra-4-lyra-gpu' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra != 'extra-4-lyra-cpu' and extra != 'extra-4-lyra-tpu')" },
+    { name = "jax-cuda13-plugin", extra = ["with-cuda"], marker = "extra == 'extra-4-lyra-gpu' or (extra != 'extra-4-lyra-cpu' and extra != 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu')" },
     { name = "jaxlib" },
 ]
 tpu = [
@@ -1481,11 +1481,11 @@ dependencies = [
 
 [package.optional-dependencies]
 gpu = [
-    { name = "jax", extra = ["cuda13"], marker = "extra == 'extra-4-lyra-gpu' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra != 'extra-4-lyra-cpu' and extra != 'extra-4-lyra-tpu')" },
+    { name = "jax", extra = ["cuda13"], marker = "extra == 'extra-4-lyra-gpu' or (extra != 'extra-4-lyra-cpu' and extra != 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu')" },
 ]
 tpu = [
-    { name = "etils", extra = ["epath-gcs"], marker = "(extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra != 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu') or (extra != 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu')" },
-    { name = "jax", extra = ["tpu"], marker = "(extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra != 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu') or (extra != 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "etils", extra = ["epath-gcs"], marker = "extra == 'extra-4-lyra-tpu' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu')" },
+    { name = "jax", extra = ["tpu"], marker = "extra == 'extra-4-lyra-tpu' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu')" },
 ]
 
 [package.dev-dependencies]
@@ -2117,14 +2117,14 @@ wheels = [
 
 [[package]]
 name = "opentelemetry-api"
-version = "1.45.0"
+version = "1.45.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1f/dc/e12c1fe1ed8a7b7149777127b1a0e12ce5bd5a81d97408bedc2128c260f5/opentelemetry_api-1.45.0.tar.gz", hash = "sha256:711ede81773c8025c2c03dac0450bc89f3d30aea6eabcc815c570d4e35a963f7", size = 72115, upload-time = "2026-09-25T12:32:28.399Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2e/02/6e0ae9cc61bd3169d401077b507b3ebc344745171e1051ab430be012dcd9/opentelemetry_api-1.45.1.tar.gz", hash = "sha256:aa38ed19bcc084ba42782a73255b3582283eced7ad6dddbd6695189e69adfb75", size = 72804, upload-time = "2026-10-06T17:32:58.133Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/b9/040d1a1c7836922828e6480cd2366bb8fe0ebf75b413d2bb51a9b0e7f78f/opentelemetry_api-1.45.0-py3-none-any.whl", hash = "sha256:80e068aba7cd56c8b58512d6a36f8d25cb1dfaa0c0a4cc1c938ccf9f362d9cb3", size = 60020, upload-time = "2026-09-25T12:32:03.192Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/41/f7dcf80b81ee8e71c1a2b59f14208bc723edbd89ed027a73b175abf6348e/opentelemetry_api-1.45.1-py3-none-any.whl", hash = "sha256:b31553efa588ae44bc306f863c785c5333a9ecc091248c6ee68b4b6c87fdedfb", size = 60256, upload-time = "2026-10-06T17:32:33.506Z" },
 ]
 
 [[package]]
@@ -2147,7 +2147,7 @@ dependencies = [
     { name = "humanize" },
     { name = "jax" },
     { name = "msgpack" },
-    { name = "nest-asyncio", marker = "sys_platform == 'win32' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "nest-asyncio", marker = "sys_platform == 'win32'" },
     { name = "numpy" },
     { name = "prometheus-client" },
     { name = "protobuf" },
@@ -2156,7 +2156,7 @@ dependencies = [
     { name = "simplejson" },
     { name = "tensorstore" },
     { name = "typing-extensions" },
-    { name = "uvloop", marker = "sys_platform != 'win32' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "uvloop", marker = "sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c6/80/238ddc4bfb0e52f5ad9d8d893510f732ca9e9df29d58fde4347be5f4ae1b/orbax_checkpoint-0.12.6.tar.gz", hash = "sha256:cdf6a9d03f6c7758089332d2d2ae19434840932da54c9e37b6ef0b96f890a5c1", size = 759615, upload-time = "2026-09-26T00:01:01.279Z" }
 wheels = [
@@ -2179,7 +2179,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
     { name = "python-dateutil" },
-    { name = "tzdata", marker = "sys_platform == 'emscripten' or sys_platform == 'win32' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "tzdata", marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e2/17/d7b106e05bfa642e8694451e7d3d759c6a241c5386a5d962e4f66c047e06/pandas-3.0.6.tar.gz", hash = "sha256:66b07ef7315a31bfe1089cd3d71a7de781c9dca986762d0b4fe7c0ef17465d10", size = 4667686, upload-time = "2026-09-17T23:23:18.345Z" }
 wheels = [
@@ -2240,7 +2240,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess", marker = "(sys_platform != 'emscripten' and sys_platform != 'win32') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'emscripten' and extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'win32' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (sys_platform == 'win32' and extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (sys_platform == 'win32' and extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "ptyprocess" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
@@ -2636,7 +2636,7 @@ name = "pytest"
 version = "9.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
@@ -2690,7 +2690,7 @@ name = "pyzmq"
 version = "27.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "implementation_name == 'pypy' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "cffi", marker = "implementation_name == 'pypy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e7/8d/5b3d5631c2f4b4b8862f64cd0c9eb777b5710eeb5125b4be8dd0a200a4c0/pyzmq-27.2.0.tar.gz", hash = "sha256:54d4259d1bfae24ecdb5ca79f7acc2eac6c286a02d6a0ae617797cb45f0726d3", size = 292316, upload-time = "2026-08-20T19:08:21.19Z" }
 wheels = [
@@ -2933,11 +2933,11 @@ wheels = [
 
 [[package]]
 name = "setuptools"
-version = "83.0.0"
+version = "84.1.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/34/26/f5d29e25ffdb535afef2d35cdb55b325298f96debd670da4c325e08d70f4/setuptools-83.0.0.tar.gz", hash = "sha256:025bccbbf0fa05b6192bc64ae1e7b16e001fd6d6d4d5de03c97b1c1ade523bef", size = 1154254, upload-time = "2026-07-04T15:31:22.699Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/73/eb/7e5f628ee2eb168fecbf8026de7856b2543d6d609cc85f086b9a91ac93d6/setuptools-84.1.0.tar.gz", hash = "sha256:23657205b63d4d31395ab917815247f694aafad28cd21316bf5fd45a51048ea0", size = 1171783, upload-time = "2026-10-19T20:11:43.489Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl", hash = "sha256:29b23c360f22f414dc7336bb39178cc7bcbf6021ed2733cde173f09dba19abb3", size = 1008090, upload-time = "2026-07-04T15:31:20.885Z" },
+    { url = "https://files.pythonhosted.org/packages/18/02/b4bbb90f8f29e334898ff45c6d9b1fffaa6f378017052b3023a06262b5f7/setuptools-84.1.0-py3-none-any.whl", hash = "sha256:5231689c6ac8156cd155cfb98c3fd6fb252c3e7e9bd3d78b64d3c55f132624c9", size = 819380, upload-time = "2026-10-19T20:11:41.684Z" },
 ]
 
 [[package]]
@@ -3097,7 +3097,7 @@ name = "tqdm"
 version = "4.70.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-gpu') or (extra == 'extra-4-lyra-cpu' and extra == 'extra-4-lyra-tpu') or (extra == 'extra-4-lyra-gpu' and extra == 'extra-4-lyra-tpu')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0d/ea/b2a5bd54b28a324dae8211928b2d730b6547500342c7e6c6dea08bd0a485/tqdm-4.70.1.tar.gz", hash = "sha256:cefd0eca11b2a37a3aee776544d4f4ae913f02688135b5556b8788dfa474afc4", size = 171846, upload-time = "2026-09-11T07:25:16.601Z" }
 wheels = [
